@@ -15,6 +15,9 @@ spring:
   datasource:
     hikari:
       auto-commit: false
+  data:
+    redis:
+      port: 36379
   jpa:
     properties:
       hibernate:
@@ -54,12 +57,25 @@ springdoc:
 
 logging:
   level:
+    com.example: DEBUG
+    org.hibernate.SQL: DEBUG
     org.hibernate.orm.jdbc.bind: TRACE
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.transaction.interceptor: TRACE
-    com.rest1: DEBUG
 
 custom:
   jwt:
     expireSeconds: "#{30 * 60}"
     secretPattern: ${CUSTOM_JWT_SECRET_PATTERN}
+  dev:
+    domain: localhost
+    backUrl: "http://${custom.dev.domain}:${server.port}"
+    frontUrl: "http://${custom.dev.domain}:3000"
+  prod:
+    domain: app3.qwas.shop
+    backUrl: "https://api.${custom.prod.domain}"
+    frontUrl: "https://www.${custom.prod.domain}"
+  site:
+    domain: "${custom.dev.domain}"
+    backUrl: "${custom.dev.backUrl}"
+    frontUrl: "${custom.dev.frontUrl}"
