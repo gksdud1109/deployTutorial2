@@ -1,16 +1,10 @@
 spring:
-  data:
-    redis:
-      host: redis_1
-      port: 6379
-      password: "${custom.prod.redis.password}"
   datasource:
     url: jdbc:mysql://mysql_1:3306/glog_prod
     username: lldjlocal
-    password: "${custom.prod.db.password}"
+    password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
-    hikari:
-      auto-commit: false
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -22,11 +16,12 @@ spring:
 
 logging:
   level:
-    com.back: TRACE
+    com.back: INFO
     org.hibernate.SQL: WARN
     org.hibernate.orm.jdbc.bind: WARN
     org.hibernate.orm.jdbc.extract: WARN
     org.springframework.transaction.interceptor: WARN
+
 custom:
   site:
     domain: "${custom.prod.domain}"

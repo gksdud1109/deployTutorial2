@@ -122,7 +122,7 @@ resource "aws_security_group" "sg_1" {
 
 # EC2 역할 생성
 resource "aws_iam_role" "ec2_role_1" {
-  name = "${var.prefix}-ec2-role-1"
+  name = "${var.prefix}-ec2-role-2"
 
   # 이 역할에 대한 신뢰 정책 설정. EC2 서비스가 이 역할을 가정할 수 있도록 설정
   assume_role_policy = <<EOF
@@ -156,7 +156,7 @@ resource "aws_iam_role_policy_attachment" "ec2_ssm" {
 
 # IAM 인스턴스 프로파일 생성
 resource "aws_iam_instance_profile" "instance_profile_1" {
-  name = "${var.prefix}-instance-profile-1"
+  name = "${var.prefix}-instance-profile-2"
   role = aws_iam_role.ec2_role_1.name
 }
 
@@ -198,7 +198,7 @@ docker run -d \
   --network common \
   -p 6379:6379 \
   -e TZ=Asia/Seoul \
-  redis --requirepass lldj123414
+  redis --requirepass ${var.password_1}
 
 # mysql 설치
 docker run -d \
@@ -208,31 +208,36 @@ docker run -d \
   -v /dockerProjects/mysql_1/volumes/etc/mysql/conf.d:/etc/mysql/conf.d \
   --network common \
   -p 3306:3306 \
-  -e MYSQL_ROOT_PASSWORD=lldj123414 \
+  -e MYSQL_ROOT_PASSWORD=${var.password_1} \
   -e TZ=Asia/Seoul \
   mysql:latest
 
 # MySQL 컨테이너가 준비될 때까지 대기
 echo "MySQL이 기동될 때까지 대기 중..."
-until docker exec mysql_1 mysql -uroot -plldj123414 -e "SELECT 1" &> /dev/null; do
+until docker exec mysql_1 mysql -uroot -p${var.password_1} -e "SELECT 1" &> /dev/null; do
   echo "MySQL이 아직 준비되지 않음. 5초 후 재시도..."
   sleep 5
 done
 echo "MySQL이 준비됨. 초기화 스크립트 실행 중..."
 
-docker exec mysql_1 mysql -uroot -plldj123414 -e "
-CREATE DATABASE IF NOT EXISTS glog_prod;
+docker exec mysql_1 mysql -uroot -p${var.password_1} -e "
+CREATE USER 'lldjlocal'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '1234';
+CREATE USER 'lldjlocal'@'172.18.%.%' IDENTIFIED WITH caching_sha2_password BY '1234';
+CREATE USER 'lldj'@'%' IDENTIFIED WITH caching_sha2_password BY '${var.password_1}';
 
-DROP USER IF EXISTS 'lldjlocal'@'%';
-CREATE USER 'lldjlocal'@'%' IDENTIFIED BY '1234';
+GRANT ALL PRIVILEGES ON *.* TO 'lldjlocal'@'127.0.0.1';
+GRANT ALL PRIVILEGES ON *.* TO 'lldjlocal'@'172.18.%.%';
+GRANT ALL PRIVILEGES ON *.* TO 'lldj'@'%';
 
-GRANT ALL PRIVILEGES ON glog_prod.* TO 'lldjlocal'@'%';
+CREATE DATABASE glog_prod;
+
 FLUSH PRIVILEGES;
 "
 
+echo "${var.github_access_token_1}" | docker login ghcr.io -u ${var.github_access_token_1_owner} --password-stdin
+
 END_OF_FILE
 }
-
 
 # EC2 인스턴스 생성
 resource "aws_instance" "ec2_1" {
