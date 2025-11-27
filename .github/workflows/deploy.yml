@@ -6,9 +6,9 @@ on:
   push:
     paths:
       - ".github/workflows/**"
-      - "src/**"
-      - "build.gradle.kts"
-      - "Dockerfile"
+      - "backend/src/**"
+      - "backend/build.gradle.kts"
+      - "backend/Dockerfile"
     branches:
       - main
 
