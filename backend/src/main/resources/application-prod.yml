@@ -22,7 +22,7 @@ spring:
 
 logging:
   level:
-    com.example: TRACE
+    com.back: TRACE
     org.hibernate.SQL: WARN
     org.hibernate.orm.jdbc.bind: WARN
     org.hibernate.orm.jdbc.extract: WARN
