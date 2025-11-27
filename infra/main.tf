@@ -221,16 +221,12 @@ done
 echo "MySQL이 준비됨. 초기화 스크립트 실행 중..."
 
 docker exec mysql_1 mysql -uroot -plldj123414 -e "
-CREATE USER 'lldjlocal'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '1234';
-CREATE USER 'lldjlocal'@'172.18.%.%' IDENTIFIED WITH caching_sha2_password BY '1234';
-CREATE USER 'lldj'@'%' IDENTIFIED WITH caching_sha2_password BY 'lldj123414';
+CREATE DATABASE IF NOT EXISTS glog_prod;
 
-GRANT ALL PRIVILEGES ON *.* TO 'lldjlocal'@'127.0.0.1';
-GRANT ALL PRIVILEGES ON *.* TO 'lldjlocal'@'172.18.%.%';
-GRANT ALL PRIVILEGES ON *.* TO 'lldj'@'%';
+DROP USER IF EXISTS 'lldjlocal'@'%';
+CREATE USER 'lldjlocal'@'%' IDENTIFIED BY '1234';
 
-CREATE DATABASE glog_prod;
-
+GRANT ALL PRIVILEGES ON glog_prod.* TO 'lldjlocal'@'%';
 FLUSH PRIVILEGES;
 "
 
