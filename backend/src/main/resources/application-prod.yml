@@ -22,11 +22,11 @@ spring:
 
 logging:
   level:
-    com.example: INFO
-    org.hibernate.SQL: INFO
-    org.hibernate.orm.jdbc.bind: INFO
-    org.hibernate.orm.jdbc.extract: INFO
-    org.springframework.transaction.interceptor: INFO
+    com.example: TRACE
+    org.hibernate.SQL: TRACE
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.orm.jdbc.extract: TRACE
+    org.springframework.transaction.interceptor: TRACE
 
 custom:
   site:
