@@ -1,6 +1,6 @@
 name: deploy
 env:
-  IMAGE_NAME: app251126
+  IMAGE_NAME: app251127-2
 
 on:
   push:
@@ -75,13 +75,15 @@ jobs:
 
       - name: export image name
         id: export_image
-        run: echo "image_name=app251126" >> $GITHUB_OUTPUT
+        run: echo "image_name=app251127" >> $GITHUB_OUTPUT
 
       - name: 빌드 앤 푸시
         uses: docker/build-push-action@v3
         with:
           context: ./backend
           push: true
+          cache-from: type=registry,ref=ghcr.io/${{ steps.export_owner.outputs.owner_lc }}/${{ steps.export_image.outputs.image_name }}:cache
+          cache-to: type=registry,ref=ghcr.io/${{ steps.export_owner.outputs.owner_lc }}/${{ steps.export_image.outputs.image_name }}:cache,mode=max
           tags: |
             ghcr.io/${{ steps.export_owner.outputs.owner_lc }}/${{ steps.export_image.outputs.image_name }}:${{ needs.makeTagAndRelease.outputs.tag_name }},
             ghcr.io/${{ steps.export_owner.outputs.owner_lc }}/${{ steps.export_image.outputs.image_name }}:latest
@@ -113,7 +115,6 @@ jobs:
           comment: Deploy
           command: |
             # 공통 변수
-            echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin && \
             IMAGE="ghcr.io/${{ needs.buildImageAndPush.outputs.owner_lc }}/${{ needs.buildImageAndPush.outputs.image_name }}:latest"
             NETWORK="common"
             HEALTH_ENDPOINT="/actuator/health"
