@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: optional:classpath:application-secret.yml
   datasource:
     url: jdbc:mysql://mysql_1:3306/glog_prod
     username: lldjlocal
